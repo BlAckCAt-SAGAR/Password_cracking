@@ -1,62 +1,45 @@
-# src/dictionary_attack.py
+# src/hash_generator.py
 """
-Dictionary attack against a list of target hashes.
-Supports salted/unsalted hashes and multiple algorithms.
+Generate hashes from a wordlist and save them as targets.
+You can optionally use a salt file (data/salt.txt).
 """
 import os
-import time
-from utils import hash_password, load_lines, save_result
+from utils import hash_password, load_lines
 
-# ---------- CONFIGURATION ----------
-ALGORITHM = "md5"                 # must match what you used to generate hashes
-USE_SALT = False                  # set True if the target hashes were generated with salt
+# ---------- CONFIGURATION (change these as needed) ----------
+ALGORITHM = "md5"               # try 'sha1' or 'sha256' later
+USE_SALT = False                # set True to use salt
 WORDLIST_PATH = "../data/common_passwords.txt"
 TARGET_HASHES_PATH = "../data/target_hashes.txt"
-RESULTS_PATH = "../results/cracked_passwords.txt"
 SALT_FILE = "../data/salt.txt"
-# -----------------------------------
+# -----------------------------------------------------------
 
 def main():
-    # Load salt if used
+    # Load salt if enabled
     salt = None
     if USE_SALT:
         if not os.path.exists(SALT_FILE):
             print(f"Error: Salt file not found at {SALT_FILE}")
             return
-        salt = load_lines(SALT_FILE)[0]
+        salt = load_lines(SALT_FILE)[0]  # use first line as salt
         print(f"Using salt: '{salt}'")
 
-    # Load wordlist
+    # Load passwords
     if not os.path.exists(WORDLIST_PATH):
         print(f"Error: Wordlist not found at {WORDLIST_PATH}")
         return
     passwords = load_lines(WORDLIST_PATH)
-    print(f"Loaded {len(passwords)} passwords from wordlist")
+    print(f"Loaded {len(passwords)} passwords from {WORDLIST_PATH}")
 
-    # Load target hashes
-    if not os.path.exists(TARGET_HASHES_PATH):
-        print(f"Error: Target hash file not found at {TARGET_HASHES_PATH}")
-        return
-    target_hashes = set(load_lines(TARGET_HASHES_PATH))   # set for fast lookup
-    print(f"Loaded {len(target_hashes)} target hashes")
+    # Generate hashes and write to file
+    with open(TARGET_HASHES_PATH, "w", encoding="utf-8") as out:
+        for pwd in passwords:
+            h = hash_password(pwd, ALGORITHM, salt)
+            out.write(h + "\n")
 
-    # Clear previous results
-    if os.path.exists(RESULTS_PATH):
-        os.remove(RESULTS_PATH)
-
-    # Begin attack
-    start = time.time()
-    cracked = 0
-    for pwd in passwords:
-        computed_hash = hash_password(pwd, ALGORITHM, salt)
-        if computed_hash in target_hashes:
-            print(f"[+] Cracked: {computed_hash} -> '{pwd}'")
-            save_result(RESULTS_PATH, computed_hash, pwd)
-            cracked += 1
-
-    elapsed = time.time() - start
-    print(f"\nDone. Cracked {cracked}/{len(target_hashes)} hashes in {elapsed:.2f} seconds.")
-    print(f"Results saved to {RESULTS_PATH}")
+    print(f"Generated {len(passwords)} {ALGORITHM.upper()} hashes -> {TARGET_HASHES_PATH}")
+    if USE_SALT:
+        print("Remember: The salt is NOT stored in the hash file (cracker must know it).")
 
 if __name__ == "__main__":
     main()
