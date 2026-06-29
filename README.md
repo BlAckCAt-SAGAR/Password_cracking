@@ -45,32 +45,30 @@ The goal is **educational** — to understand the weaknesses of weak hashing alg
 ## 📁 Project Structure
 password-cracking-project/
 │
-├── .gitignore # Python-specific ignores
-├── .gitattributes # Line-ending normalisation
-├── LICENSE # MIT License
-├── README.md # You are here 📖
-├── requirements.txt # Python dependencies (none required)
+├── .gitignore
+├── .gitattributes
+├── LICENSE
+├── README.md
+├── requirements.txt
 │
-├── src/ # Source code
-│ ├── utils.py # Shared helper functions
-│ ├── hash_generator.py # Generate hashes from wordlist
-│ ├── dictionary_attack.py # Dictionary-based password cracking
-│ └── brute_force.py # Pure brute-force demonstration
+├── src/
+│ ├── utils.py
+│ ├── hash_generator.py
+│ ├── dictionary_attack.py
+│ └── brute_force.py
 │
-├── data/ # Input data files
-│ ├── common_passwords.txt # Sample wordlist (18 common passwords)
-│ ├── salt.txt # Salt value for testing salted hashes
-│ └── target_hashes.txt # Generated hashes to crack
+├── data/
+│ ├── common_passwords.txt
+│ ├── salt.txt
+│ └── target_hashes.txt
 │
-├── results/ # Output files
-│ └── cracked_passwords.txt # Successfully cracked hash:password pairs
+├── results/
+│ └── cracked_passwords.txt
 │
-└── demo_screenshots/ # Terminal output screenshots
+└── demo_screenshots/
 ├── hash_generation.png
 ├── dictionary_crack.png
 └── brute_force.png
-
-text
 
 ---
 
